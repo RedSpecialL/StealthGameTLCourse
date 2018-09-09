@@ -7,6 +7,7 @@
 #include "FPSExtractionZone.generated.h"
 
 class UBoxComponent;
+class UDecalComponent;
 
 UCLASS()
 class FPSGAME_API AFPSExtractionZone : public AActor
@@ -29,6 +30,10 @@ protected:
 		int32 OtherBodyIndex,
 		bool bFromSweep,
 		const FHitResult& SweepResult);
+
+protected:
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UDecalComponent* DecalComponents;
 
 public:
 
