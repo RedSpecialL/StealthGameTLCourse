@@ -54,7 +54,7 @@ void AFPSExtractionZone::HandleOverlap(
 
 		if (GameMode != nullptr)
 		{
-			GameMode->CompleteMission(MyPawn);
+			GameMode->CompleteMission(MyPawn, true);
 		}
 	}
 	else
