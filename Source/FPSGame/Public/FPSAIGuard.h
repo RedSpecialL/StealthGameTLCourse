@@ -34,4 +34,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+private:
+	UFUNCTION()
+	void ResetOrientation();
+
+private:
+
+	FTimerHandle TimerHandle_ResetOrientation;
+
+	FRotator OriginalRotation;
+	
 };

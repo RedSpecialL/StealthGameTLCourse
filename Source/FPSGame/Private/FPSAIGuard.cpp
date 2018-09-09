@@ -20,6 +20,8 @@ void AFPSAIGuard::BeginPlay()
 	Super::BeginPlay();
 	PawnSensingComponent->OnSeePawn.AddDynamic(this, &AFPSAIGuard::OnPawnSeen);
 	PawnSensingComponent->OnHearNoise.AddDynamic(this, &AFPSAIGuard::OnNoiseHeard);
+
+	OriginalRotation = GetActorRotation();
 }
 
 void AFPSAIGuard::OnPawnSeen(APawn* SeenPawn)
@@ -34,8 +36,20 @@ void AFPSAIGuard::OnPawnSeen(APawn* SeenPawn)
 
 void AFPSAIGuard::OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, float Volume)
 {
-
 	DrawDebugSphere(GetWorld(), Location, 32.0f, 12, FColor::Green, false, 10.0f);
+
+	FVector Direction = Location - GetActorLocation();
+	Direction.Normalize();
+
+	FRotator NewLookAt = FRotationMatrix::MakeFromX(Direction).Rotator();
+	// We want guard rotate only on yaw.
+	NewLookAt.Pitch = NewLookAt.Roll = 0.0f;
+
+	SetActorRotation(NewLookAt);
+
+	GetWorldTimerManager().ClearTimer(TimerHandle_ResetOrientation);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_ResetOrientation, this, &AFPSAIGuard::ResetOrientation, 3.0f);
 }
 
 // Called every frame
@@ -43,4 +57,9 @@ void AFPSAIGuard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AFPSAIGuard::ResetOrientation()
+{
+	SetActorRotation(OriginalRotation);
 }
