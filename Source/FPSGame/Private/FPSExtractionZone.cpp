@@ -8,6 +8,8 @@
 #include "Components/BoxComponent.h"
 #include "Components/DecalComponent.h"
 
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values
 AFPSExtractionZone::AFPSExtractionZone()
 {
@@ -38,11 +40,16 @@ void AFPSExtractionZone::HandleOverlap(
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Overlapped with extraction zone!"));
 
 	AFPSCharacter* MyPawn = Cast<AFPSCharacter>(OtherActor);
-	if (MyPawn != nullptr && MyPawn->bIsCarryingObjective)
+	if (MyPawn == nullptr)
 	{
+		return;
+	}
+
+	if(MyPawn->bIsCarryingObjective)
+	{
+
 		AFPSGameMode* GameMode = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
 
 		if (GameMode != nullptr)
@@ -50,5 +57,11 @@ void AFPSExtractionZone::HandleOverlap(
 			GameMode->CompleteMission(MyPawn);
 		}
 	}
+	else
+	{
+		UGameplayStatics::PlaySound2D(this, ObjectiveMissingSound);
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Overlapped with extraction zone!"));
 }
 

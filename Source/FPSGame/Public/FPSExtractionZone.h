@@ -8,6 +8,7 @@
 
 class UBoxComponent;
 class UDecalComponent;
+class USoundBase;
 
 UCLASS()
 class FPSGAME_API AFPSExtractionZone : public AActor
@@ -30,6 +31,9 @@ protected:
 		int32 OtherBodyIndex,
 		bool bFromSweep,
 		const FHitResult& SweepResult);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundBase* ObjectiveMissingSound;
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
