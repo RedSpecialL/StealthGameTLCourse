@@ -19,18 +19,23 @@ void AFPSAIGuard::BeginPlay()
 {
 	Super::BeginPlay();
 	PawnSensingComponent->OnSeePawn.AddDynamic(this, &AFPSAIGuard::OnPawnSeen);
+	PawnSensingComponent->OnHearNoise.AddDynamic(this, &AFPSAIGuard::OnNoiseHeard);
 }
 
 void AFPSAIGuard::OnPawnSeen(APawn* SeenPawn)
 {
-	UE_LOG(LogTemp, Log, TEXT("My eyes are open"));
-
 	if (SeenPawn == nullptr)
 	{
 		return;
 	}
 
-	DrawDebugSphere(GetWorld(), SeenPawn->GetActorLocation(), 32.0f, 12, FColor::Black, false, 10.0f);
+	DrawDebugSphere(GetWorld(), SeenPawn->GetActorLocation(), 32.0f, 12, FColor::Red, false, 10.0f);
+}
+
+void AFPSAIGuard::OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, float Volume)
+{
+
+	DrawDebugSphere(GetWorld(), Location, 32.0f, 12, FColor::Green, false, 10.0f);
 }
 
 // Called every frame
