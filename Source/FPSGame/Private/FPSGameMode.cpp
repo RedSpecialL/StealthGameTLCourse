@@ -5,6 +5,8 @@
 #include "FPSCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
+#include "Kismet/GameplayStatics.h"
+
 AFPSGameMode::AFPSGameMode()
 {
 	// set default pawn class to our Blueprinted character
@@ -20,7 +22,31 @@ void AFPSGameMode::CompleteMission(APawn* InstigatorPawn)
 	if (InstigatorPawn != nullptr)
 	{
 		InstigatorPawn->DisableInput(nullptr);
+
+		if (SpectatingViewpointClass)
+		{
+
+			TArray<AActor*> ReturnedActors;
+			UGameplayStatics::GetAllActorsOfClass(this, SpectatingViewpointClass, ReturnedActors);
+
+			if (ReturnedActors.Num() > 0)
+			{
+				AActor* NewViewTarget = ReturnedActors[0];
+				APlayerController* PlayerController = Cast<APlayerController>(InstigatorPawn->GetController());
+
+				if (PlayerController != nullptr)
+				{
+					PlayerController->SetViewTargetWithBlend(
+						NewViewTarget, 0.5f, EViewTargetBlendFunction::VTBlend_Cubic);
+				}
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("SpectatingViewpointClass is not valid. Please, update gamemode class with valid class. Cannot change spectating viewtarget."));
+		}
 	}
 
 	OnMissionCompleted(InstigatorPawn);
+
 }
