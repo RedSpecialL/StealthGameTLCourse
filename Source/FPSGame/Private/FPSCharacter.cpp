@@ -49,6 +49,19 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 }
 
 
+void AFPSCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if(!IsLocallyControlled())
+	{
+		FRotator NewRotator = CameraComponent->RelativeRotation;
+		NewRotator.Pitch = RemoteViewPitch * 360.0f / 255.0f;
+
+		CameraComponent->SetRelativeRotation(NewRotator);
+	}
+}
+
 void AFPSCharacter::Fire()
 {
 	ServerFire();
@@ -86,7 +99,6 @@ void AFPSCharacter::ServerFire_Implementation()
 		ActorSpawnParams.Instigator = this;
 
 		// spawn the projectile at the muzzle
-		UE_LOG(LogTemp, Warning, TEXT("MuzzleRotation %s"), *MuzzleRotation.ToCompactString());
 		GetWorld()->SpawnActor<AFPSProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, ActorSpawnParams);
 	}
 }
