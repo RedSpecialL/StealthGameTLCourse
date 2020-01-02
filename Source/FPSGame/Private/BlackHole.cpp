@@ -45,18 +45,11 @@ void ABlackHole::Tick(float DeltaTime)
 	{
 		if (Actor != nullptr)
 		{
-			
-
-
 			UStaticMeshComponent* Temp = Cast<UStaticMeshComponent>(Actor->GetRootComponent());
 			if (Temp != nullptr)
 			{
 				Temp->AddRadialForce(GetActorLocation(), PullingSphere->GetScaledSphereRadius(), -(ForceApplied * Temp->GetMass()), ERadialImpulseFalloff::RIF_Linear);
-				//Temp->AddForce
 			}
-
-			//AddForce
-			//Actor->AddForce();
 		}
 	}
 
