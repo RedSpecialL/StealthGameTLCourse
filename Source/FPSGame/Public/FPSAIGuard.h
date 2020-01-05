@@ -13,7 +13,8 @@ enum class EAIState : uint8
 {
 	Idle,
 	Suspicios,
-	Alerted
+	Alerted,
+	Patroling
 };
 
 UCLASS()
@@ -31,6 +32,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UPawnSensingComponent* PawnSensingComponent;
+
+	UPROPERTY(EditInstanceOnly)
+	bool bCanPatrol;
 
 	UFUNCTION()
 	void OnPawnSeen(APawn* SeenPawn);
@@ -51,9 +55,20 @@ protected:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UPROPERTY(EditInstanceOnly)
+	AActor* FirstPoint;
+
+	UPROPERTY(EditInstanceOnly)
+	AActor* SecondPoint;
+
+	AActor* NextPoint;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION()
+	void DoPatroling();
 
 private:
 	UFUNCTION()

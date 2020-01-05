@@ -6,9 +6,12 @@
 #include "DrawDebugHelpers.h"
 #include "FPSGameMode.h"
 #include "Net/UnrealNetwork.h"
+#include "NavigationSystem.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 
 // Sets default values
 AFPSAIGuard::AFPSAIGuard()
+	: bCanPatrol(false)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -26,6 +29,11 @@ void AFPSAIGuard::BeginPlay()
 	PawnSensingComponent->OnHearNoise.AddDynamic(this, &AFPSAIGuard::OnNoiseHeard);
 
 	OriginalRotation = GetActorRotation();
+
+	if (bCanPatrol)
+	{
+		SetGuardState(EAIState::Patroling);
+	}
 }
 
 void AFPSAIGuard::OnPawnSeen(APawn* SeenPawn)
@@ -91,6 +99,35 @@ void AFPSAIGuard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (GuardState == EAIState::Patroling)
+	{
+		DoPatroling();
+	}
+
+	if (NextPoint != nullptr)
+	{
+		float Distance = (GetActorLocation() - NextPoint->GetActorLocation()).Size();
+
+		if (Distance < 50)
+		{
+			NextPoint = NextPoint == FirstPoint ? SecondPoint : FirstPoint;
+		}
+	}
+}
+
+void AFPSAIGuard::DoPatroling()
+{
+	if (FirstPoint == nullptr && SecondPoint == nullptr)
+	{
+		SetGuardState(EAIState::Idle);
+	}
+
+	if (NextPoint == nullptr)
+	{
+		NextPoint = FirstPoint;
+	}
+
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(GetController(), NextPoint->GetActorLocation());
 }
 
 void AFPSAIGuard::ResetOrientation()
@@ -101,6 +138,12 @@ void AFPSAIGuard::ResetOrientation()
 	}
 
 	SetActorRotation(OriginalRotation);
+
+	if (bCanPatrol)
+	{
+		SetGuardState(EAIState::Patroling);
+		return;
+	}
 
 	SetGuardState(EAIState::Idle);
 }
