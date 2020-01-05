@@ -107,10 +107,11 @@ void AFPSAIGuard::Tick(float DeltaTime)
 	if (NextPoint != nullptr)
 	{
 		float Distance = (GetActorLocation() - NextPoint->GetActorLocation()).Size();
+		UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), Distance);
 
-		if (Distance < 50)
+		if (Distance < 80)
 		{
-			NextPoint = NextPoint == FirstPoint ? SecondPoint : FirstPoint;
+			NextPoint = (NextPoint == FirstPoint ? SecondPoint : FirstPoint);
 		}
 	}
 }
